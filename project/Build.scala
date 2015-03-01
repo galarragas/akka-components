@@ -35,7 +35,7 @@ object InventoryBuild extends Build {
   val akka = Seq(
     "com.typesafe.akka" %% "akka-actor" % akkaVersion,
     "com.typesafe.akka" %% "akka-slf4j" % akkaVersion
-  ) map { _ % "provided" }
+  )
 
 
   val akkaTest = Seq(
@@ -60,10 +60,10 @@ object InventoryBuild extends Build {
 
 
   val rootClasspath =
-    akka ++
+    (akka map { _ % "provided" } )++
     scalaTest ++
     akkaTest ++
-    logback map { _ % "test"}
+    (logback map { _ % "test"})
 
   val root =
       Project(id = "akka-components", base = file("."))
