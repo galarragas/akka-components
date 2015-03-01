@@ -142,6 +142,12 @@ class CircuitBreakerActor(
         log.debug("HALF-OPEN: First message {} received, forwarding it to target {}", message, target)
         forwardRequest(message, sender, state)
         stay using state.copy(firstHalfOpenMessageSent = true)
+
+      case Event(message, CircuitBreakerStateData(_, true)) =>
+        val failureNotification = failureMap(CircuitOpenFailure(message))
+        log.debug("HALF-OPEN: Failing request for message {}, sending failure notification {} to sender {}", message, failureNotification, sender)
+        sender ! failureNotification
+        stay
     }
   }
 

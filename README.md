@@ -1,6 +1,8 @@
 # akka-components
 Collection of AKKA Related Components
 
+[![Build Status](https://api.travis-ci.org/galarragas/akka-components.png)](http://travis-ci.org/galarragas/akka-components)
+
 ## Circuit-Breaker Actor
 
 This is an alternative implementation of the [AKKA Circuit Breaker Pattern](http://doc.akka.io/docs/akka/snapshot/common/circuitbreaker.html). 
