@@ -51,14 +51,6 @@ object InventoryBuild extends Build {
   )
 
 
-  val commonsCollections = Seq(
-    "commons-collections" % "commons-collections" % "3.2"
-  )
-
-
-  val commonsLang = Seq("commons-lang" % "commons-lang" % "2.6")
-
-
   val rootClasspath =
     (akka map { _ % "provided" } )++
     scalaTest ++
@@ -72,7 +64,8 @@ object InventoryBuild extends Build {
         .settings(
           ScoverageSbtPlugin.ScoverageKeys.coverageMinimum := 75,
           ScoverageSbtPlugin.ScoverageKeys.coverageFailOnMinimum := true,
-          fork := true
+          fork := true,
+          publishMavenStyle := true
         )
         .testReportConfig
     
