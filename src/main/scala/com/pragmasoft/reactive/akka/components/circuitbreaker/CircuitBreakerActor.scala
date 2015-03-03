@@ -3,6 +3,7 @@ package com.pragmasoft.reactive.akka.components.circuitbreaker
 import akka.actor._
 import akka.util.Timeout
 import akka.pattern._
+import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Success, Failure}
 
 object CircuitBreakerActor {
@@ -46,7 +47,20 @@ object CircuitBreakerActor {
 
   }
 
+  class OpenCircuitException extends Exception("Circuit Open so unable to complete operation")
 
+  implicit class CircuitBreakerAwareFuture(val future: Future[Any]) extends AnyVal {
+    def failForOpenCircuit(implicit executionContext: ExecutionContext): Future[Any] = failForOpenCircuitWith(new OpenCircuitException)
+
+    def failForOpenCircuitWith( throwing: => Throwable)(implicit executionContext: ExecutionContext): Future[Any] = {
+      future.flatMap { _ match {
+        case CircuitOpenFailure(_) => Future.failed(throwing)
+        case result => Future.successful(result)
+      }
+      }
+    }
+
+  }
 
 }
 import CircuitBreakerActor._

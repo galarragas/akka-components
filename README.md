@@ -157,6 +157,43 @@ class CircuitBreakerAskExample(potentiallyFailingService: ActorRef) extends Acto
 }
 ```
 
+If it is not possible to define define a specific error response, you can map the Open Circuit notification into a failure.
+That also means that your `CircuitBreakerActor` will be essentially useful to protect you from time out for extra workload or
+temporary failures in the target actor
+
+
+```scala
+class CircuitBreakerAskWithFailureExample(potentiallyFailingService: ActorRef) extends Actor with ActorLogging {
+  import SimpleService._
+  import akka.pattern._
+  import CircuitBreakerActor._
+
+  implicit val askTimeout: Timeout = 2.seconds
+
+  val serviceCircuitBreaker =
+    context.actorOf(
+      CircuitBreakerActorBuilder( maxFailures = 3, callTimeout = askTimeout, resetTimeout = 30.seconds ).propsForTarget(potentiallyFailingService),
+      "serviceCircuitBreaker"
+    )
+
+  import context.dispatcher
+
+  override def receive: Receive = {
+    case AskFor(requestToForward) =>
+      (serviceCircuitBreaker ? Request(requestToForward)).failForOpenCircuit.mapTo[String].onComplete {
+        case Success(successResponse) =>
+          //handle response
+          log.info("Got successful response {}", successResponse)
+
+        case Failure(exception) =>
+          //handle response
+          log.info("Got successful response {}", exception)
+
+      }
+  }
+}
+```
+
 ## Adding Dependency to AKKA Components
 
 Add conjars repository to your resolvers:

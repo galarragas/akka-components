@@ -2,7 +2,7 @@ import sbt.Keys._
 import sbt._
 import scoverage.ScoverageSbtPlugin
 
-object InventoryBuild extends Build {
+object AkkaComponentsBuild extends Build {
     
   lazy val commonResolvers = Seq(
     DefaultMavenRepository,
