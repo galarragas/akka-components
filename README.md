@@ -35,6 +35,8 @@ class SimpleService extends Actor with ActorLogging {
 
   var messageCount = 0
 
+  import context.dispatcher
+
   context.system.scheduler.schedule(1.second, 1.second, self, ResetCount)
 
   override def receive = {
@@ -110,7 +112,7 @@ class CircuitBreakerAskExample(potentiallyFailingService: ActorRef) extends Acto
   import SimpleService._
   import akka.pattern._
 
-  implicit val askTimeout = 2.seconds
+  implicit val askTimeout: Timeout = 2.seconds
 
   val serviceCircuitBreaker =
     context.actorOf(
@@ -131,6 +133,8 @@ class CircuitBreakerAskExample(potentiallyFailingService: ActorRef) extends Acto
         .propsForTarget(potentiallyFailingService),
       "serviceCircuitBreaker"
     )
+
+  import context.dispatcher
 
   override def receive: Receive = {
     case AskFor(requestToForward) =>
